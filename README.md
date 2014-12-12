@@ -11,6 +11,9 @@ git clone --recursive git@github.com:takumi0125/grunt-static-website.git .
 cd grunt
 npm install
 ```
+
+<a href="http://sass-lang.com/" target="_blank">Sass/SCSS</a>がインストールされていない場合はインストールしてください。
+
 ## 概要
 
 基本構造は  
