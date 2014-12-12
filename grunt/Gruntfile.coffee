@@ -145,12 +145,13 @@ module.exports = (grunt) ->
     #
     # Sass/SCSS コンパイルタスク
     #
-    # * [grunt-sass](https://github.com/sindresorhus/grunt-sass)
+    # * [grunt-contrib-sass](https://github.com/gruntjs/grunt-contrib-sass)
     #
     sass:
       options:
-        sourceMap: false
-        outputStyle: 'expanded'
+        unixNewlines: true
+        sourcemap: 'none'
+        style: 'expanded'
       source:
         expand: true
         cwd: SRC_DIR
