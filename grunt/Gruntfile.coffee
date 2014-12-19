@@ -4,7 +4,7 @@ SRC_DIR = './src'
 PUBLISH_DIR = '../htdocs'
 DATA_JSON = "_data.json"
 
-BOWER_INSTALL_DIR_BASE = '/assets'
+ASSETS_DIR = '/assets'
 
 paths =
   html: '**/*.html'
@@ -39,17 +39,15 @@ module.exports = (grunt) ->
   #
   # spritesmith のタスクを生成
   # 
-  # @param {string} taskName          タスクを識別するための名前 スプライトタスクが複数ある場合はユニークにする
-  # @param {string} dirBase           コンテンツディレクトリのパス (SRC_DIRからの相対パス)
-  # @param {string} outputFileName    出力されるスプライト画像 / CSS (SCSS) の名前
-  # @param {string} outputImgPathType CSSに記述される画像パスのタイプ (absolute | relative)
-  # @param {string} imgDir            dirBaseから画像ディレクトリへのパス
-  # @param {string} cssDir            dirBaseからCSSディレクトリへのパス
+  # @param {string} taskName       タスクを識別するための名前 スプライトタスクが複数ある場合はユニークにする
+  # @param {string} imgDir         画像ディレクトリへのパス
+  # @param {string} cssDir         CSSディレクトリへのパス
+  # @param {string} outputImgPath  CSSに記述される画像パス
   #
-  # #{SRC_DIR}#{dirBase}#{imgDir}/_#{outputFileName}/
+  # #{SRC_DIR}#{imgDir}/_#{taskName}/
   # 以下にソース画像を格納しておくと
-  # #{SRC_DIR}#{dirBase}#{cssDir}/_#{outputFileName}.scss と
-  # #{SRC_DIR}#{dirBase}#{imgDir}/#{outputFileName}.png が生成される
+  # #{SRC_DIR}#{cssDir}/_#{taskName}.scss と
+  # #{SRC_DIR}#{imgDir}/#{taskName}.png が生成される
   # かつ watch タスクの監視も追加
   #
   #
@@ -57,18 +55,18 @@ module.exports = (grunt) ->
   #
   # * [grunt-spritesmith](https://github.com/Ensighten/grunt-spritesmith)
   #
-  createSpritesTask = (taskName, dirBase, outputFileName = 'sprites', outputImgPathType = 'absolute', imgDir = '/img', cssDir = '/css') ->
+  createSpritesTask = (taskName, imgDir, cssDir, outputImgPath = '') ->
     if !conf.hasOwnProperty('sprite') then conf.sprite = {}
     
-    srcImgFiles = "#{SRC_DIR}#{dirBase}#{imgDir}/_#{outputFileName}/*"
+    srcImgFiles = "#{SRC_DIR}#{imgDir}/_#{taskName}/*"
     conf.sprite[taskName] =
       src:   [ srcImgFiles ]
-      destImg: "#{SRC_DIR}#{dirBase}#{imgDir}/#{outputFileName}.png"
-      destCSS: "#{SRC_DIR}#{dirBase}#{cssDir}/_#{outputFileName}.scss"
+      dest: "#{SRC_DIR}#{imgDir}/#{taskName}.png"
+      destCss: "#{SRC_DIR}#{cssDir}/_#{taskName}.scss"
       algorithm: 'binary-tree'
       padding: 2
-    if outputImgPathType is 'absolute'
-      conf.sprite[taskName].imgPath = "#{dirBase}#{imgDir}/#{outputFileName}.png"
+    
+    if outputImgPath then conf.sprite[taskName].imgPath = outputImgPath
 
     if conf.watch.hasOwnProperty('sprite')
       conf.watch.sprite.files.push srcImgFiles
@@ -76,9 +74,10 @@ module.exports = (grunt) ->
       conf.watch.sprite =
         files: [ srcImgFiles ]
         tasks: [
-          'sprite'
+          "sprite:#{taskName}"
           'notify:build'
         ]
+    
     conf.watch.img.files.push "!#{srcImgFiles}"
 
 
@@ -105,7 +104,7 @@ module.exports = (grunt) ->
     bower:
       source:
         options:
-          targetDir: "#{SRC_DIR}#{BOWER_INSTALL_DIR_BASE}"
+          targetDir: "#{SRC_DIR}#{ASSETS_DIR}"
           layout: (type, component, source)->
             if source.match /(.*)\.css/ then return 'css/lib'
             if source.match /(.*)\.js/ then return 'js/lib'
@@ -188,21 +187,6 @@ module.exports = (grunt) ->
     # * [CoffeeLint options](http://www.coffeelint.org/#options)
     #
     coffeelint:
-      options:
-        indentation: 2
-        max_line_length: 80
-        camel_case_classes: true
-        no_trailing_semicolons:  true
-        no_implicit_braces: true
-        no_implicit_parens: false
-        no_empty_param_list: true
-        no_tabs: true
-        no_trailing_whitespace: true
-        no_plusplus: false
-        no_throwing_strings: true
-        no_backticks: true
-        line_endings: true
-        no_stand_alone_at: false
       general:
         expand: true
         cwd: SRC_DIR
@@ -456,7 +440,6 @@ module.exports = (grunt) ->
         files: addSrcPath paths.js
         tasks: [
           'newer:jshint'
-          'newer:js'
           'newer:copy:js'
           'notify:build'
         ]
@@ -493,8 +476,8 @@ module.exports = (grunt) ->
       
       
   # spritesタスクを生成
-  createSpritesTask 'common', '/assets', 'commonSprites'
-  createSpritesTask 'index', '/assets', 'indexSprites'
+  createSpritesTask 'commonSprites', "#{ASSETS_DIR}/img/common", "#{ASSETS_DIR}/css", "#{ASSETS_DIR}/img/common/commonSprites.png"
+  createSpritesTask 'indexSprites', "#{ASSETS_DIR}/img/index", "#{ASSETS_DIR}/css", "#{ASSETS_DIR}/img/index/indexSprites.png"
 
   #
   # 実行タスクの順次定義 (`grunt.registerTask tasks.TASK` として登録)
@@ -517,7 +500,7 @@ module.exports = (grunt) ->
       'copy:img'
     ]
     js: [
-      'coffeelint'
+      #'coffeelint'
       'coffee'
       'jshint'
       'copy:js'
@@ -558,4 +541,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'json',    tasks.json
   grunt.registerTask 'watcher', tasks.watcher
   grunt.registerTask 'default', tasks.default
+
 
