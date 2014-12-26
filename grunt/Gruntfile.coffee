@@ -38,7 +38,7 @@ module.exports = (grunt) ->
 
   #
   # spritesmith のタスクを生成
-  # 
+  #
   # @param {string} taskName       タスクを識別するための名前 スプライトタスクが複数ある場合はユニークにする
   # @param {string} imgDir         画像ディレクトリへのパス
   # @param {string} cssDir         CSSディレクトリへのパス
@@ -57,7 +57,7 @@ module.exports = (grunt) ->
   #
   createSpritesTask = (taskName, imgDir, cssDir, outputImgPath = '') ->
     if !conf.hasOwnProperty('sprite') then conf.sprite = {}
-    
+
     srcImgFiles = "#{SRC_DIR}#{imgDir}/_#{taskName}/*"
     conf.sprite[taskName] =
       src:   [ srcImgFiles ]
@@ -65,7 +65,7 @@ module.exports = (grunt) ->
       destCss: "#{SRC_DIR}#{cssDir}/_#{taskName}.scss"
       algorithm: 'binary-tree'
       padding: 2
-    
+
     if outputImgPath then conf.sprite[taskName].imgPath = outputImgPath
 
     if conf.watch.hasOwnProperty('sprite')
@@ -77,7 +77,7 @@ module.exports = (grunt) ->
           "sprite:#{taskName}"
           'notify:build'
         ]
-    
+
     conf.watch.img.files.push "!#{srcImgFiles}"
 
 
@@ -116,8 +116,8 @@ module.exports = (grunt) ->
 
     ################
     ###   html   ###
-    ################ 
-    
+    ################
+
     #
     # Jade コンパイルタスク
     #
@@ -126,6 +126,7 @@ module.exports = (grunt) ->
     jade:
       options:
         pretty: true
+        basedir: SRC_DIR
         data: ->
           return grunt.file.readJSON addSrcPath DATA_JSON
       source:
@@ -175,7 +176,7 @@ module.exports = (grunt) ->
         dest: '<%= path.publish %>'
         ext: '.css'
 
-    
+
     ##############
     ###   js   ###
     ##############
@@ -210,7 +211,7 @@ module.exports = (grunt) ->
         dest: PUBLISH_DIR
         ext: '.js'
 
-        
+
     #
     # JSHint による JavaScript 静的解析タスク
     #
@@ -319,7 +320,7 @@ module.exports = (grunt) ->
         src: createSrcArr 'html'
         filter: 'isFile'
         dest: PUBLISH_DIR
-        
+
       css:
         expand: true
         cwd: SRC_DIR
@@ -375,10 +376,10 @@ module.exports = (grunt) ->
           title: '監視開始'
           message: 'ローカルサーバーを起動しました: http://localhost:50000/'
 
-   
+
     ##################
     ###   concat   ###
-    ################## 
+    ##################
 
     #
     # ファイル結合タスク
@@ -406,21 +407,21 @@ module.exports = (grunt) ->
       options:
         livereload: true
         spawn: false
-      
+
       html:
         files: addSrcPath paths.html
         tasks: [
           'newer:copy:html'
           'notify:build'
         ]
-      
+
       jade:
         files: addSrcPath paths.jade
         tasks: [
           'newer:jade'
           'notify:build'
         ]
-      
+
       css:
         files: addSrcPath paths.css
         tasks: [
@@ -428,14 +429,14 @@ module.exports = (grunt) ->
           'autoprefixer'
           'notify:build'
         ]
-      
+
       sass:
         files: addSrcPath paths.sass
         tasks: [
           'newer:sass'
           'notify:build'
         ]
-      
+
       js:
         files: addSrcPath paths.js
         tasks: [
@@ -443,7 +444,7 @@ module.exports = (grunt) ->
           'newer:copy:js'
           'notify:build'
         ]
-      
+
       json:
         files: addSrcPath paths.json
         tasks: [
@@ -451,7 +452,7 @@ module.exports = (grunt) ->
           'newer:copy:json'
           'notify:build'
         ]
-      
+
       coffee:
         files: addSrcPath paths.coffee
         tasks: [
@@ -459,7 +460,7 @@ module.exports = (grunt) ->
           'newer:coffee'
           'notify:build'
         ]
-      
+
       img:
         files: [ addSrcPath paths.img ]
         tasks: [
@@ -473,8 +474,8 @@ module.exports = (grunt) ->
           'newer:copy:others'
           'notify:build'
         ]
-      
-      
+
+
   # spritesタスクを生成
   createSpritesTask 'commonSprites', "#{ASSETS_DIR}/img/common", "#{ASSETS_DIR}/css", "#{ASSETS_DIR}/img/common/commonSprites.png"
   createSpritesTask 'indexSprites', "#{ASSETS_DIR}/img/index", "#{ASSETS_DIR}/css", "#{ASSETS_DIR}/img/index/indexSprites.png"
@@ -541,5 +542,3 @@ module.exports = (grunt) ->
   grunt.registerTask 'json',    tasks.json
   grunt.registerTask 'watcher', tasks.watcher
   grunt.registerTask 'default', tasks.default
-
-
