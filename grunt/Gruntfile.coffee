@@ -24,6 +24,9 @@ paths =
     '!**/_*/**'
     '!**/_*'
   ]
+  jadeInclude  : '**/_*.jade'
+  sassInclude  : '**/_*.{sass,scss}'
+  coffeeInclude: '**/_*.{coffee}'
 
 #
 # Grunt 主要設定
@@ -472,6 +475,28 @@ module.exports = (grunt) ->
         files: addSrcPath paths.others
         tasks: [
           'newer:copy:others'
+          'notify:build'
+        ]
+
+      jadeAll:
+        files: paths.jadeInclud
+        tasks: [
+          'jade'
+          'notify:build'
+        ]
+
+      sassAll:
+        files: paths.sassInclud
+        tasks: [
+          'sass'
+          'notify:build'
+        ]
+
+      coffeeAll:
+        files: paths.coffeeInclud
+        tasks: [
+          'newer:coffeelint'
+          'coffee'
           'notify:build'
         ]
 
