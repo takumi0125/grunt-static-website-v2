@@ -33,7 +33,11 @@ paths =
 # --------------
 module.exports = (grunt) ->
   # 頭に SRC_DIR/ をつけて返す
-  addSrcPath = (path)-> "#{SRC_DIR}/#{path}"
+  addSrcPath = (path)->
+    if path instanceof Array
+      path.map (p)-> "#{SRC_DIR}/#{p}"
+    else
+      "#{SRC_DIR}/#{path}"
 
 
   #「_」が先頭のファイル、ディレクトリを除外するように src 用の配列を生成
@@ -479,21 +483,21 @@ module.exports = (grunt) ->
         ]
 
       jadeAll:
-        files: paths.jadeInclud
+        files: paths.jadeInclude
         tasks: [
           'jade'
           'notify:build'
         ]
 
       sassAll:
-        files: paths.sassInclud
+        files: paths.sassInclude
         tasks: [
           'sass'
           'notify:build'
         ]
 
       coffeeAll:
-        files: paths.coffeeInclud
+        files: paths.coffeeInclude
         tasks: [
           'newer:coffeelint'
           'coffee'
