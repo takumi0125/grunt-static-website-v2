@@ -7,7 +7,7 @@ grunt-static-website
 ```bash
 mkdir yourProject
 cd yourProject
-git clone --recursive git@github.com:takumi0125/grunt-static-website.git .
+git clone --recursive git@github.com:takumi0125/grunt-static-website-v2.git .
 cd grunt
 npm install
 ```
