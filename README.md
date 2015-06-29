@@ -1,4 +1,4 @@
-grunt-static-website
+grunt-static-website-v2
 ===============================
 
 静的サイト制作用の汎用gruntタスクテンプレートです。
